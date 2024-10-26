@@ -1,4 +1,5 @@
 use webproof::{generate_webproof, verify_webproof};
+<<<<<<< HEAD
 =======
 use rustls::{ClientConfig, ClientConnection, ServerName, Stream, RootCertStore};
 use std::error::Error;
@@ -177,15 +178,21 @@ fn verify_webproof(webproof: &str, max_age_seconds: i64) -> Result<bool, Box<dyn
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Simulate fetching Ethereum price and session ID
+=======
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
     let eth_price = 1234.56;
     let session_id = b"some-unique-session-id";
 
-    // Generate a web proof
     let webproof = generate_webproof(eth_price, session_id)?;
     println!("Generated WebProof: {}", webproof);
 
+<<<<<<< HEAD
     // Verify the web proof (allowing proofs up to 5 minutes old)
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
     let is_valid = verify_webproof(&webproof, 300)?;
     println!("WebProof is valid: {}", is_valid);
 

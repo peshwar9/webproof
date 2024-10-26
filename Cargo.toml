@@ -30,6 +30,13 @@ ed25519-dalek = "1.0.1"
 rand = "0.7.3"
 chrono = "0.4"
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
+=======
+ed25519-dalek = "1.0.1"
+rand = "0.7.3"
+chrono = "0.4"
+sha2 = "0.9.5"
+hex = "0.4.3"
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 
 
 

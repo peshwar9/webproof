@@ -34,6 +34,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
 name = "block-buffer"
 version = "0.9.0"
@@ -44,6 +45,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "bumpalo"
 version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -100,6 +103,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "curve25519-dalek"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -113,13 +117,15 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "curve25519-dalek"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90f9d052967f590a76e62eb387bd0bbb1b000182c3cefe5364db6b7211651bc0"
 dependencies = [
  "byteorder",
- "digest 0.9.0",
+ "digest",
  "rand_core",
  "subtle",
  "zeroize",
@@ -135,6 +141,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -173,6 +180,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "ed25519"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -215,6 +224,7 @@ checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
 dependencies = [
  "cfg-if",
  "libc",
+<<<<<<< HEAD
  "wasi 0.9.0+wasi-snapshot-preview1",
 ]
 
@@ -228,6 +238,9 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi 0.11.0+wasi-snapshot-preview1",
+=======
+ "wasi",
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 ]
 
 [[package]]
@@ -237,6 +250,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
+<<<<<<< HEAD
 <<<<<<< HEAD
 name = "iana-time-zone"
 version = "0.1.61"
@@ -253,6 +267,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "iana-time-zone"
 version = "0.1.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -280,6 +296,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "iana-time-zone-haiku"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -289,6 +306,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "js-sys"
 version = "0.3.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -310,6 +329,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
+<<<<<<< HEAD
 name = "num-traits"
 version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -319,6 +339,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "num-traits"
 version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -374,7 +396,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 dependencies = [
- "getrandom 0.1.16",
+ "getrandom",
  "libc",
  "rand_chacha",
  "rand_core",
@@ -397,7 +419,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
 dependencies = [
- "getrandom 0.1.16",
+ "getrandom",
 ]
 
 [[package]]
@@ -410,6 +432,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "ring"
 version = "0.16.20"
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
@@ -462,6 +485,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "serde"
 version = "1.0.213"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -488,6 +513,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4d58a1e1bf39749807d89cf2d98ac2dfa0ff1cb3faa38fbb64dd88ac8013d800"
 dependencies = [
 <<<<<<< HEAD
+<<<<<<< HEAD
  "block-buffer",
  "cfg-if",
  "cpufeatures",
@@ -498,6 +524,12 @@ dependencies = [
  "cpufeatures",
  "digest 0.9.0",
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
+=======
+ "block-buffer",
+ "cfg-if",
+ "cpufeatures",
+ "digest",
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
  "opaque-debug",
 ]
 
@@ -516,6 +548,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "74233d3b3b2f6d4b006dc19dee745e73e2a6bfb6f93607cd3b02bd5b00797d7c"
 
 [[package]]
+<<<<<<< HEAD
 name = "spin"
 version = "0.5.2"
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
@@ -523,6 +556,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "74233d3b3b2f6d4b006dc19dee745e73e2a6bfb6f93607cd3b02bd5b00797d7c"
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -566,6 +601,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
+<<<<<<< HEAD
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
@@ -573,6 +609,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "wasm-bindgen"
 version = "0.2.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -635,6 +673,7 @@ dependencies = [
  "ed25519-dalek",
  "hex",
 <<<<<<< HEAD
+<<<<<<< HEAD
  "rand",
 =======
  "hmac",
@@ -643,10 +682,14 @@ dependencies = [
  "serde",
  "serde_json",
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
+=======
+ "rand",
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
  "sha2",
 ]
 
 [[package]]
+<<<<<<< HEAD
 <<<<<<< HEAD
 name = "windows-core"
 =======
@@ -662,6 +705,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "windows-core"
 version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -671,6 +716,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "windows-sys"
 >>>>>>> 3d18f2a (using asymmetric keys instead of hmac and added security)
 version = "0.52.0"
@@ -681,6 +727,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> b0ec543 (tests added , and refactored to lib and main)
 name = "windows-targets"
 version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
