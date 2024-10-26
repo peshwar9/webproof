@@ -1,7 +1,9 @@
 [package]
 name = "webproof"
 version = "0.1.0"
+authors = ["Your Name <your.email@example.com>"]
 edition = "2021"
+license = "MIT"
 
 [lib]
 name = "webproof"
