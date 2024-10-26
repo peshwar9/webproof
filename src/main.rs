@@ -7,7 +7,12 @@ use webpki_roots;
 use serde_json::Value;
 use std::collections::HashMap;
 use hmac::{Hmac, Mac};
-use sha2::Sha256;
+use sha2::{Sha256, Digest};
+use hex;
+use ed25519_dalek::{Keypair, Signer, Verifier, PublicKey, Signature, SecretKey};
+use chrono::{Utc, DateTime};
+use rand::{rngs::OsRng, RngCore};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn fetch_eth_price(session_store: &mut HashMap<String, Vec<u8>>) -> Result<(f64, Vec<u8>), Box<dyn Error>> {
     // Define the URL to fetch the Ethereum price from CoinGecko
@@ -88,38 +93,95 @@ fn fetch_eth_price(session_store: &mut HashMap<String, Vec<u8>>) -> Result<(f64,
     }
 }
 
-fn generate_webproof(price: f64, session_id: &[u8]) -> String {
-    let message = format!("The current price of Ethereum is: ${:.2}", price);
+// Derive a keypair from session ID and a random salt
+fn derive_keypair_from_session(session_id: &[u8], salt: &[u8]) -> Keypair {
+    let mut hasher = Sha256::new();
+    hasher.update(session_id);
+    hasher.update(salt);
+    let seed = hasher.finalize();
+    let secret = SecretKey::from_bytes(&seed[..32]).expect("Failed to create secret key");
+    let public = (&secret).into();
+    Keypair { secret, public }
+}
+
+fn generate_webproof(price: f64, session_id: &[u8]) -> Result<String, Box<dyn Error>> {
+    // Generate a random salt
+    let mut salt = [0u8; 16];
+    OsRng.fill_bytes(&mut salt);
+
+    let keypair = derive_keypair_from_session(session_id, &salt);
     
-    // Create HMAC-SHA256 instance
-    let mut mac = Hmac::<Sha256>::new_from_slice(session_id)
-        .expect("HMAC can take key of any size");
+    // Get current timestamp
+    let timestamp: DateTime<Utc> = Utc::now();
+    
+    // Create the message containing the Ethereum price, timestamp, and salt
+    let message = format!(
+        "The current price of Ethereum is: ${:.2}. Timestamp: {}. Salt: {}",
+        price,
+        timestamp.to_rfc3339(),
+        hex::encode(salt)
+    );
+    
+    // Sign the message
+    let signature = keypair.sign(message.as_bytes());
 
-    // Add message to HMAC
-    mac.update(message.as_bytes());
+    // Convert signature and public key to hex strings
+    let signature_hex = hex::encode(signature.to_bytes());
+    let public_key_hex = hex::encode(keypair.public.to_bytes());
 
-    // Calculate HMAC
-    let result = mac.finalize();
-    let signature = result.into_bytes();
+    // Format the web proof
+    Ok(format!("{}. Session Public Key: {}. Signature: {}", message, public_key_hex, signature_hex))
+}
 
-    // Convert signature to hex string
-    let signature_hex = signature.iter().map(|b| format!("{:02x}", b)).collect::<String>();
+fn verify_webproof(webproof: &str, max_age_seconds: i64) -> Result<bool, Box<dyn Error>> {
+    // Split the webproof into its components
+    let parts: Vec<&str> = webproof.split(". ").collect();
+    if parts.len() != 5 {
+        return Err("Invalid webproof format".into());
+    }
 
-    format!("{}. Signature: {}", message, signature_hex)
+    let price_part = parts[0];
+    let timestamp_part = parts[1];
+    let salt_part = parts[2];
+    let public_key_part = parts[3];
+    let signature_part = parts[4];
+
+    // Extract timestamp
+    let timestamp_str = timestamp_part.strip_prefix("Timestamp: ")
+        .ok_or("Invalid timestamp format")?;
+    let timestamp = DateTime::parse_from_rfc3339(timestamp_str)?;
+
+    // Check if the proof is not too old
+    let now = Utc::now();
+    if (now.timestamp() - timestamp.timestamp()) > max_age_seconds {
+        return Ok(false);
+    }
+
+    // Reconstruct the message
+    let message = format!("{}. {}. {}", price_part, timestamp_part, salt_part);
+
+    // Extract public key and signature
+    let public_key = PublicKey::from_bytes(&hex::decode(public_key_part.strip_prefix("Session Public Key: ")
+        .ok_or("Invalid public key format")?)?)?;
+    let signature = Signature::from_bytes(&hex::decode(signature_part.strip_prefix("Signature: ")
+        .ok_or("Invalid signature format")?)?)?;
+
+    // Verify the signature
+    Ok(public_key.verify(message.as_bytes(), &signature).is_ok())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // Store sessions in a HashMap
-    let mut session_store: HashMap<String, Vec<u8>> = HashMap::new();
+    // Simulate fetching Ethereum price and session ID
+    let eth_price = 1234.56;
+    let session_id = b"some-unique-session-id";
 
-    // Fetch the Ethereum price and session ID
-    let (eth_price, session_id) = fetch_eth_price(&mut session_store)?;
+    // Generate a web proof
+    let webproof = generate_webproof(eth_price, session_id)?;
+    println!("Generated WebProof: {}", webproof);
 
-    // Generate a web proof based on the fetched price and session ID
-    let webproof = generate_webproof(eth_price, &session_id);
-
-    // Print the web proof
-    println!("{}", webproof);
+    // Verify the web proof (allowing proofs up to 5 minutes old)
+    let is_valid = verify_webproof(&webproof, 300)?;
+    println!("WebProof is valid: {}", is_valid);
 
     Ok(())
 }
