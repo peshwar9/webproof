@@ -3,21 +3,29 @@ use async_trait::async_trait;
 use std::sync::Arc;
 use reqwest::Client;
 use serde_json::Value;
+use std::env;
 
 struct WeatherDataExtractor;
 
 #[async_trait]
 impl WebContentExtractor for WeatherDataExtractor {
     async fn extract_content(&self, _tls_connection: &dyn TlsConnection) -> Result<String, Box<dyn std::error::Error>> {
-        let api_key = "YOUR_OPENWEATHERMAP_API_KEY"; // Replace with your actual API key
+        let api_key = env::var("WEATHER_KEY").map_err(|_| "WEATHER_KEY environment variable not set")?;
+        println!("API Key: {}", api_key); // Be careful with this line, remove it after debugging
         let city = "London"; // You can make this configurable
-        let url = format!("http://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric", city, api_key);
+        let url = format!("https://api.openweathermap.org/data/2.5/weather?q={}&appid={}&units=metric", city, api_key);
         
+        // Print the URL with partially obscured API key
+        let obscured_url = url.replace(&api_key, &format!("{}...", &api_key[..5]));
+        println!("Requesting URL: {}", obscured_url);
+
         let client = Client::new();
         let response = client.get(&url).send().await?;
         
-        if !response.status().is_success() {
-            return Err(format!("API request failed with status: {}", response.status()).into());
+        let status = response.status();
+        if !status.is_success() {
+            let error_text = response.text().await?;
+            return Err(format!("API request failed with status: {}. Response: {}", status, error_text).into());
         }
         
         let text = response.text().await?;
