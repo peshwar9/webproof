@@ -143,7 +143,7 @@ WebProof uses the following components:
    - Reconstruct the signed string from session ID, timestamp, and content
    - Verify the signature using the Ed25519 public key
 
-## Future improvements planned
+## Future possible improvements
 
 1. **Blockchain Integration**: Implement anchoring of proofs in a public blockchain for additional security and immutability.
 
