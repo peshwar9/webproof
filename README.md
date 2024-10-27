@@ -44,33 +44,78 @@ To use WebProof in your project, add it to your `Cargo.toml`:
 webproof = { git = "https://github.com/yourusername/webproof.git" }
 ```
 
-Then, in your Rust code:
+## Quick Start
+
+Here's a simple example of how to use WebProofs:
 ```
-use webproof::{generate_webproof, verify_webproof};
-use ring::signature::{Ed25519KeyPair, KeyPair};
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-// Generate a key pair
-let rng = ring::rand::SystemRandom::new();
-let key_pair = Ed25519KeyPair::generate_pkcs8(&rng)?;
-let key_pair = Ed25519KeyPair::from_pkcs8(key_pair.as_ref())?;
-// Generate a proof
-let content = "Hello, WebProof!";
-let proof = generate_webproof(content, &key_pair).await?;
-// Verify the proof
-let public_key = key_pair.public_key();
-let is_valid = verify_webproof(&proof, public_key.as_ref())?;
-println!("Proof is valid: {}", is_valid);
-Ok(())
+use webproof::{WebProofGenerator, WebContentExtractor, TlsConnection, verify_webproof};
+use async_trait::async_trait;
+use std::sync::Arc;
+
+// Implement a simple TLS connection
+struct SimpleTlsConnection;
+
+impl TlsConnection for SimpleTlsConnection {
+    fn negotiated_cipher_suite(&self) -> Option<String> {
+        Some("TLS_AES_256_GCM_SHA384".to_string())
+    }
 }
 
+// Implement a basic content extractor
+struct SimpleContentExtractor;
+
+#[async_trait]
+impl WebContentExtractor for SimpleContentExtractor {
+    async fn extract_content(&self, _tls_connection: &dyn TlsConnection) -> Result<String, Box<dyn std::error::Error>> {
+        Ok("Hello, WebProof!".to_string())
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create a simple TLS connection
+    let tls_connection = Arc::new(SimpleTlsConnection);
+
+    // Set up the content extractor
+    let content_extractor = SimpleContentExtractor;
+
+    // Create the WebProofGenerator
+    let proof_generator = WebProofGenerator::new(tls_connection, content_extractor)?;
+
+    // Generate a proof
+    let proof = proof_generator.generate_webproof().await?;
+
+    // Get the public key
+    let public_key = proof_generator.public_key()?;
+
+    // Verify the proof
+    let is_valid = verify_webproof(&proof, &public_key)?;
+
+    println!("Proof is valid: {}", is_valid);
+    println!("Generated proof: {}", proof);
+
+    Ok(())
+}
 ```
+This example demonstrates:
+- Implementing a `TlsConnection` to provide TLS session information.
+- Creating a `WebContentExtractor` to define how content is fetched and formatted.
+- Using `WebProofGenerator` to create proofs based on the TLS connection and extracted content.
+- Generating and verifying a web proof.
+
+For more detailed examples, including real-world scenarios like weather data attestation, check out the `examples/` directory.
+
 To run the Ethereum price example:
 ```
 cargo run --example ethereum_price
 ```
 
 This will fetch the current Ethereum price, generate a proof, and verify it.
+
+To run the weather attestation example:
+```
+WEATHER_KEY=<your_openweathermap_api_key> cargo run --example weather_attestation
+```
 
 ## Design details of how WebProof is implemented
 
