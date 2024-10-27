@@ -1,36 +1,58 @@
-// examples/ethereum_price.rs
-
-use webproof::{generate_webproof, verify_webproof};
-use ring::signature::{Ed25519KeyPair, KeyPair};
-use reqwest;
+use webproof::{WebProofGenerator, WebContentExtractor, TlsConnection};
+use async_trait::async_trait;
+use std::sync::Arc;
+use reqwest::Client;
 use serde_json::Value;
 
-async fn fetch_ethereum_price() -> Result<String, Box<dyn std::error::Error>> {
+struct EthereumPriceExtractor;
+
+#[async_trait]
+impl WebContentExtractor for EthereumPriceExtractor {
+    async fn extract_content(&self, _tls_connection: &dyn TlsConnection) -> Result<String, Box<dyn std::error::Error>> {
+        let url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd";
+        let response = reqwest::get(url).await?;
+        let json: Value = response.json().await?;
+        let eth_price = json["ethereum"]["usd"].as_f64().ok_or("Failed to parse Ethereum price")?;
+        Ok(format!("Ethereum Price: ${:.2}", eth_price))
+    }
+}
+
+// Implement a simple TlsConnection for this example
+struct SimpleTlsConnection;
+
+impl TlsConnection for SimpleTlsConnection {
+    fn negotiated_cipher_suite(&self) -> Option<String> {
+        Some("TLS_AES_256_GCM_SHA384".to_string())
+    }
+}
+
+async fn fetch_ethereum_price() -> Result<f64, Box<dyn std::error::Error>> {
+    let client = Client::new();
+
     let url = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd";
-    let resp: Value = reqwest::get(url).await?.json().await?;
-    let price = resp["ethereum"]["usd"].as_f64().ok_or("Failed to parse price")?;
-    Ok(price.to_string())
+    let response = client.get(url).send().await?;
+    let json: Value = response.json().await?;
+    let eth_price = json["ethereum"]["usd"].as_f64().ok_or("Failed to parse Ethereum price")?;
+    
+    Ok(eth_price)
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let rng = ring::rand::SystemRandom::new();
-    let key_pair = Ed25519KeyPair::generate_pkcs8(&rng)
-        .map_err(|e| format!("Key generation error: {:?}", e))?;
-    let key_pair = Ed25519KeyPair::from_pkcs8(key_pair.as_ref())
-        .map_err(|e| format!("Key parsing error: {:?}", e))?;
+    // Fetch the price
+    let price = fetch_ethereum_price().await?;
+    println!("Ethereum Price: ${:.2}", price);
 
-    let eth_price = fetch_ethereum_price().await?;
-    
-    let proof = generate_webproof(&eth_price, &key_pair).await?;
-    
-    println!("Generated Ethereum price proof: {}", proof);
-    
-    let public_key = key_pair.public_key();
-    let is_valid = verify_webproof(&proof, public_key.as_ref())?;
-    
-    println!("Verified Ethereum price: ${}", eth_price);
-    println!("Proof is valid: {}", is_valid);
-    
+    // Create a simple TlsConnection
+    let tls_connection = Arc::new(SimpleTlsConnection);
+
+    // Set up the extractor and proof generator
+    let content_extractor = EthereumPriceExtractor;
+    let proof_generator = WebProofGenerator::new(tls_connection, content_extractor)?;
+
+    // Generate the web proof
+    let proof = proof_generator.generate_webproof().await?;
+    println!("Generated Web Proof: {}", proof);
+
     Ok(())
 }

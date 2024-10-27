@@ -9,30 +9,25 @@ license = "MIT"
 name = "webproof"
 path = "src/lib.rs"
 
-[[bin]]
-name = "webproof"
-path = "src/main.rs"
+[[example]]
+name = "ethereum_price"
+path = "examples/ethereum_price.rs"
+
 
 [dependencies]
-ed25519-dalek = "1.0.1"
+rustls = "0.21"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1.68"
+reqwest = { version = "0.11.18", features = ["json", "rustls-tls"] }
+serde_json = "1.0.96"
+webpki-roots = "0.25"
 ring = "0.16.20"
 base64 = "0.21.0"
-chrono = "0.4.19"
-async-trait = "0.1.51"
-tokio = { version = "1.0", features = ["full", "macros"] }
-rand = "0.8.5"
-hex = "0.4.3"
-rustls = "0.20"
-webpki = "0.21"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1.0"
-webpki-roots = "0.22.0"
-sha2 = "0.9.5"
+chrono = "0.4.24"
+uuid = { version = "1.3.0", features = ["v4"] }
 
 [dev-dependencies]
-reqwest = { version = "0.11", features = ["json"] }
-serde_json = "1.0"
-tokio = { version = "1.0", features = ["full", "macros"] }
+tokio = { version = "1.28.0", features = ["full", "test-util"] }
 
 
 
